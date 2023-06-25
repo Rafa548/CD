@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Music</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            margin-right: 10px; 
+        }
+
+        input[type="number"],
+        input[type="file"],
+        input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        hr {
+            margin: 30px 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end; 
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px; 
+        }
+
+        .button-container button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button onclick="window.location.href='/start'">Go to Start</button> 
+    </div>
+
+    <div class="container">
+        <h1>Submit Music</h1>
+
+        <h2>Existing Music</h2>
+        <ul>
+            {% for music in music_data %}
+            <li>
+                {{ music.name }} by {{ music.band }} [{{ music.music_id }}]
+                <form action="/music/edit/{{ music.music_id }}" method="post">
+                    <label>Instrument Tracks:</label>
+                    <input type="checkbox" id="checkbox1" name="instrumentTrack_{{ music.music_id }}[]" value="Drums">
+                    <label for="checkbox1">Drums</label>
+
+                    <input type="checkbox" id="checkbox2" name="instrumentTrack_{{ music.music_id }}[]" value="Bass">
+                    <label for="checkbox2">Bass</label>
+
+                    <input type="checkbox" id="checkbox3" name="instrumentTrack_{{ music.music_id }}[]" value="Vocals">
+                    <label for="checkbox3">Vocals</label>
+
+                    <input type="checkbox" id="checkbox4" name="instrumentTrack_{{ music.music_id }}[]" value="Other">
+                    <label for="checkbox4">Other</label>
+
+                    <br>
+
+                    <input type="hidden" name="musicId" value="{{ music.music_id }}">
+                    <input type="submit" value="Edit">
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <hr>
+
+        <h2>Process Existing Music</h2>
+        <form method="POST" id="processForm" enctype="multipart/form-data">
+            <label for="musicId">Music ID:</label>
+            <input type="number" name="musicId" id="musicId" required><br>
+            <input type="submit" value="Process">
+        </form>
+
+        <h1>Music Upload</h1>
+        <form action="/music" method="post" enctype="multipart/form-data">
+            <label for="musicFile">Select Music File:</label>
+            <input type="file" id="musicFile" name="musicFile" required><br>
+
+            <label>Instrument Tracks:</label>
+            <input type="checkbox" id="checkbox1" name="instrumentTrack" value="Drums">
+            <label for="checkbox1">Drums</label>
+
+            <input type="checkbox" id="checkbox2" name="instrumentTrack" value="Bass">
+            <label for="checkbox2">Bass</label>
+
+            <input type="checkbox" id="checkbox3" name="instrumentTrack" value="Vocals">
+            <label for="checkbox3">Vocals</label>
+
+            <input type="checkbox" id="checkbox4" name="instrumentTrack" value="Other">
+            <label for="checkbox4">Other</label><br>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('form[action^="/music/"]').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                this.submit();
+            });
+        });
+
+        document.getElementById("processForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var musicId = document.getElementById("musicId").value;
+            var actionUrl = "/music/" + musicId;
+
+            this.action = actionUrl;
+            this.submit();
+
+        });
+    </script>
+</body>
+</html>

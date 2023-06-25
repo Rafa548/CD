@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 4px;
+        }
+
+        .job-id {
+            font-weight: bold;
+        }
+
+        .job-details {
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px; 
+        }
+
+        .button-container button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="button-container">
+        <button onclick="window.location.href='/start'">Go to Start</button> 
+    </div>
+
+    <h1>Job List</h1>
+    <ul>
+        {% for job in jobs %}
+        <li>
+            <span class="job-id">{{ job.job_id }}</span>
+            <div class="job-details">
+                <strong>Music ID:</strong> {{ job.music_id }}<br>
+                <strong>Track:</strong> {{ job.track }}<br>
+                <strong>Size:</strong> {{ job.size }}<br>
+                <strong>Time:</strong> {{ job.time }}<br>
+                <strong>Link:</strong> <a href="{{ url_for('serve_audioj', filename=job.link) }}">{{ job.link }}</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

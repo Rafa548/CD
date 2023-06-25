@@ -1,0 +1,8 @@
+
+Slide
+diagrama
+protocolo implementado
+execuçao (como ficou mais rapido/lento)
+
+
+é suposto correr com workers em pcs diferentes

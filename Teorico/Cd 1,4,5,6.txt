@@ -1,0 +1,190 @@
+1 |Sistemas Distribuidos|
+
+Sistema Distribuido -> conjunto de computadores independentes que são apresentados ao utilizador como um único sistema integrado
+			  -> cada nó tem a sua noçao de tempo
+			  -> Importante -> cada nó ser autenticado e cada nó ter uma lista de nós que pode trocar mensagens
+
+Grupo Aberto -> Qualquer nó pode juntar-se ao sistema distribuido
+Grupo Fechado -> Existe comunicação apenas entre nós do mesmo grupo e a entrada de uma novo nó do grupo é decidida por um sistema de autenticaçao separado
+			->esse sistema autentica o nó que deseja entrar, é trocada uma mensagem entre um nó do grupo para verificar se o novo nó pertence isto diminui a reabilidade porque mesmo um nao que nao pertence ao grupo troca mensagens 				com membros do grupo descobrindo a sua existencia
+
+Sistema unico e Coerente 
+			->todos os nós que fazem parte do mesmo se comportam da mesma forma independentemente da situaçao
+			->importante tambem a transparencia (o utilizador nao deve ser capaz de verificar a localizaçao dos processos e as acçoes executadas)
+		Inevitavelmente este sistema falha
+
+
+Middleware -> camada de software acima do sistema operativo
+		-> 4 camadas
+			->Comunicação (RPC)
+			->Transaçoes
+			->Composiçao dos servicos
+			->Fiabilidade
+
+
+Objetivo de um SD
+			->garantir a facil acessibilidade dos recursos, garantir a tranparencia, ser aberto, ser escalavel
+
+Pitfalls 
+		->A rede é fiavel
+		->A topologia nao se altera
+		->Latencia é zero 
+		->largura de banda infinita
+		->custo de transporte zero
+		->existe um unico administrador
+
+Tipos de Sistemas distribuidos
+		-> Cluster  (varias maquinas semelhantes conectadas por uma rede)
+		-> Grid	(varios sistemas de diferentes dominios administrativos)
+		-> Cloud	(next level do cloud)
+
+
+
+//////////////////////////////////////////                                //////////////////////////////////////////////
+
+4 |Comunicações|
+
+Protocolos -> Orientado à comunicação (exemplo: telefonema)
+	     -> Conectionless (exemplo: carta)
+
+Camadas da pilha OSI -> Application
+				Presentation
+				Session
+				Transport
+				Network
+				Data Link
+				Physical
+				
+		
+Protocolos Middleware
+	Versao simplificada da pilha OSI->  Application
+							Middleware
+							OS
+							Hardware
+
+Tipos de Comunicação->  Persistente (armazenada ate ser entrege) (email) (middleware orientado a mensagens) **
+				Transiente (armazenada enquanto ambos emissor e reetor tiverem em execuçao) (Cliente-Servidor usado no trab) *
+				Asincrona (entrega imediatamente) **
+				Sincrona (Servidor bloqueia ate saber que a mensagem foi entregue) *
+
+Remote Procedure Call -> Tecnologia para invocar procedimentos localizados noutras maquinas ocultando a troca de mensagens ao programador
+			    -> Sao criados client and server stubs para esse efeito
+
+Passagem de parametros (skiped)
+
+RPC Sincrono -> bloqueia apenas momentaneamente e envia uma mensagem de acknowledge assim que recebe e antes de a processar
+    Assincrono-> bloqueia ate que o processamento esteja concluido
+
+deffered synchronous RPC -> cliente recebe e desbloqueia e ao terminar o processamento envia uma nova mensagem com o retorno do metodo executado 
+
+one-Way RPC -> assincrono (logo nao existe fiabilidade garantida)
+Multicast Rpc possivel ao aplicar one-Way Rpc (tem alguns problemas)
+
+DCE RPC (existe um pouco complexo (caguei))
+
+Comunicação orientada a mensagens
+
+Sockets (trabalho) -> servidor -> bind,listen,accept,receive,send,close
+			    client -> connect,receive,send
+
+Socket ZeroMK -> biblioteca de alto nivel para troca de mensagens assincronas
+	Tipos -> Request-Reply (RPC)
+		   Publish-Subscribe (Multicast)
+		   PipeLine (primeiro a pedir primeiro a receber)
+
+
+Comunicação persistente (Filas)
+	Guardam as mensagem garantindo o seu envio sendo apenas impossivel de determinar quando o mesmo será concluido
+	->Put (insere na fila)
+	->Get (bloqueia ate ter msg na fila remove a 1)
+	->Poll (verifica a existencia de msg se existir remove a 1 nunca bloqueia)
+	->Notify (instala um handler que é chamado quando uma mensagem é colocada numa determinada fila)
+	
+
+Message Broker -> aplicação externa que simplifica conversões de mensagens 
+
+//////////////////////////////////////////////////////////////////////////////////        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+5 |Designação (Naming)|
+
+nome->refere uma identidade -> acedida atraves de um ponto de acesso -> designado por um endereço
+
+nome independente da localização -> identificador (nao tem qualquer significado)
+
+Naming Systems ->
+			Flat Naming (identificadores planos construidos de forma aleatória) (ex ip/ethernet)
+			Broadcasting (todos)
+			Multicasting (alguns escolhidos)
+			Forward Pointes (pensar em rede movel onde mesmo ao mudar de localização mantemos o mesmo endereço)
+ 	
+
+Resoluçao de Endereços
+
+Distributed Hash Table -> Chord (existem finger tables que melhoram a performance para O(log n) antes era O(n))
+
+HLS -> estrutura em arvores com os dominios por ordem (em caso de repetiçao de redes a mesma só é apresentada uma vez no nó acima)
+	->procura nos nós superiores ate ser encontrado
+	->atualizaçao nos nós superiores ate ser substituido
+	->eliminaçao mesma coisa mas deve ser verificado se existe replicaçao 
+
+Flat Naming ->nao é adequado para leitura por humanos
+
+Name Spaces -> nó folha (exemplo -> ficheiro numa pasta	)
+		   nó intermediário (exemplo -> pasta)
+
+Name Resolution -> necessario saber raiz
+			 aliases -> outros nomes para a mesma identidade
+			 é possivel juntar varios name spaces
+
+Name Space -> Global (muito estavel (poucas alteraçoes)) (directory nodes)
+	     -> Administrativa (menos estavel que a anterior) (nos geridos por organizaçao)
+	     -> Managerial (muda com frequencia)  (hosts da lan)
+
+O name space é dividido em zonas (partes (nao sobrepostas) implementadas por diferentes servidores (name servers))
+
+Resoluçao de nomes -> iterativo (pouco a pouco atraves de diversas trocas)
+			    recursivo (apenas uma vai ate ao fim depois retorna do fim ate ao inicio tudo) -> aumenta a eficacia do caching +
+																     -> reduz custos de comunicação +
+																     -> consome mais recursos	-
+
+Exemplo de Naming server -> DNS	
+
+Attribute Base Naming-> descriçao de entidades como pares (atributo,valor)
+				Naming systems baseados nesta abordagem sao designados por directory services
+
+
+Defeniçao dos atributos 
+	RDF (relative distinguish name)-> descreve uma identidade como um tripleto (sujeito,predicado,objeto) 
+
+
+LDAP (light weight directory acess protocol)-> serviço usado para implementar um naming system que tem por base um conjunto de registos designados por uma sequencia de 								     
+							atributos de nome (relative distinguish name) (RDN).
+							     ao listar estes RDNs de forma sequencial é criada a (directory information tree) (DIT) um grafo de nomes de diretorio
+							     ao conjunto de todas as entradas chamamos (DIB)
+
+
+//////////////////////////////////////////////////////////////////////////////////        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+6 |CLOCKS|
+
+UTC -> Universal Cordinated Time
+Precision -> internal sync
+Accuracy ->	external sync
+
+Clock syncronization -> Network Time Protocol (calcula-se usando o offset e acelera-se ou desacelera-se o relogio)
+				Algoritmo de berkley (time server pede o tempo de todas as maquinas computa uma average e depois diz a cada uma se deve acelerar ou atrasar o seu tempo)
+				RBS (existe é estranho (caguei))
+
+Logical clock -> Lamport algorithm - (pensar nas colunas umas ao lado das outras e á medida que vai avancando o valor do clock seguinte tem de ser sempre superior)
+ 
+Vector clocks -> vetores onde é incrementado um dependendo do indice do pc atual
+
+Mutual exclusion algorithms - Centralizado  (cordenador crasha)
+			 		Descentralizado  (fome,baixa efeciencia)
+					Distribuido  (crash de um qq processo)
+			 		Token Ring  (perda de token)
+
+
+Election Algorithms - Bullying (todos assumem-se como o cordenador ate aparecer um com id maior)
+			    Ring  ()
+			    P2P   ()
